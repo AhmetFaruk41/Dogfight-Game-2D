@@ -14,7 +14,7 @@ public class SpaceshipController : MonoBehaviour
     public float atesEtmeAraligi = 0.1f; // Başlangıç ateş etme aralığı
     public float hizliAtesEtmeAraligi = 0.2f; // Hızlı ateş etme aralığı
     public float hizAzalmaSuresi = 2f; // Ateş etme hızının artacağı süre
-    public float eskiAteşHiziGeriDönüsSuresi = 2f; // Ateş hızının eski haline dönme süresi
+    public float eskiAtesHiziGeriDonusSuresi = 2f; // Ateş hızının eski haline dönme süresi
 
     public GameObject roketPrefab; // Roket prefab'ı
     public Transform roketCikisNoktasi; // Roketin çıkış noktası
@@ -50,8 +50,8 @@ public class SpaceshipController : MonoBehaviour
     void Update()
     {
         HandleInput();
-        HandleAteşEtme();
-        HandleAteşHiziGeriDönüş();
+        HandleAtesEtme();
+        HandleAtesHiziGeriDonus();
         HandleRoketAtis();
     }
 
@@ -114,7 +114,7 @@ public class SpaceshipController : MonoBehaviour
         }
     }
 
-    void HandleAteşEtme()
+    void HandleAtesEtme()
     {
         if (atesEdiyor)
         {
@@ -135,12 +135,12 @@ public class SpaceshipController : MonoBehaviour
         }
     }
 
-    void HandleAteşHiziGeriDönüş()
+    void HandleAtesHiziGeriDonus()
     {
         if (!atesEdiyor && hizAzaldi)
         {
             atesEtmeBeklemeZamanlayici += Time.deltaTime;
-            if (atesEtmeBeklemeZamanlayici >= eskiAteşHiziGeriDönüsSuresi)
+            if (atesEtmeBeklemeZamanlayici >= eskiAtesHiziGeriDonusSuresi)
             {
                 atesEtmeAraligi = varsayilanAtesEtmeAraligi; // Eski ateş etme aralığına geri dön
                 hizAzaldi = false; // Hızı eski haline döndükten sonra bu bayrağı sıfırla
@@ -170,7 +170,7 @@ public class SpaceshipController : MonoBehaviour
     {
         GameObject mermi = Instantiate(mermiPrefab, mermiCikisNoktasi.position, mermiCikisNoktasi.rotation);
         Rigidbody2D rbMermi = mermi.GetComponent<Rigidbody2D>();
-        rbMermi.velocity = transform.up * mermiHizi;
+        rbMermi.velocity = rb.velocity + (Vector2)mermiCikisNoktasi.up * mermiHizi;
 
         // Merminin uçağa çarpmamasını sağlamak için
         Physics2D.IgnoreCollision(mermi.GetComponent<Collider2D>(), GetComponent<Collider2D>());
@@ -182,7 +182,7 @@ public class SpaceshipController : MonoBehaviour
     {
         GameObject roket = Instantiate(roketPrefab, roketCikisNoktasi.position, roketCikisNoktasi.rotation);
         Rigidbody2D rbRoket = roket.GetComponent<Rigidbody2D>();
-        rbRoket.velocity = transform.up * roketHizi;
+        rbRoket.velocity = rb.velocity + (Vector2)roketCikisNoktasi.up * roketHizi;
 
         // Roketin uçağa çarpmamasını sağlamak için
         Physics2D.IgnoreCollision(roket.GetComponent<Collider2D>(), GetComponent<Collider2D>());
